@@ -1231,6 +1231,9 @@ class tokens extends Survey_Common_Action
     */
     function email($iSurveyId, $tokenids = null)     
     {
+
+      $gpg = new gnupg();
+      
         $clang = $this->getController()->lang;
         $iSurveyId = sanitize_int($iSurveyId);
 
@@ -1494,8 +1497,35 @@ class tokens extends Survey_Common_Action
                             $success = $event->get('error') == null;
                         }
                         else
-                        {
-                            $success = SendEmailMessage($modmessage, $modsubject, $to, $from, Yii::app()->getConfig("sitename"), $bHtml, getBounceEmail($iSurveyId), $aRelevantAttachments, $customheaders);
+			{
+
+			  // Take the first attribute to be a gnupg-compatible
+			  // key id or "none"
+
+			  // Fail case the key cannot be found or encryption
+			  // fails for any other reason
+
+			  if ($token->attributes['attribute_1'] != 'none') {
+
+			    $key_id = $token->attributes['attribute_1'];
+
+			    $gpg -> clearencryptkeys();
+			    $gpg -> seterrormode(GNUPG_ERROR_EXCEPTION);
+			    $gpg -> addencryptkey($key_id);
+
+			    $encrypted = $gpg -> encrypt($modmessage);
+			    
+                            $success = SendEmailMessage($encrypted, $modsubject, $to, 
+							$from, Yii::app()->getConfig("sitename"), 
+							$bHtml, getBounceEmail($iSurveyId), 
+							$aRelevantAttachments, $customheaders);
+			  } else {
+
+                            $success = SendEmailMessage($modmessage, $modsubject, $to, 
+							$from, Yii::app()->getConfig("sitename"), 
+							$bHtml, getBounceEmail($iSurveyId), 
+							$aRelevantAttachments, $customheaders);
+			  }
                         }
 
                         if ($success)
