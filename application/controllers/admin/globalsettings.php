@@ -164,6 +164,10 @@ class GlobalSettings extends Survey_Common_Action
         setGlobalSetting('emailsmtpssl', sanitize_paranoid_string(Yii::app()->request->getPost('emailsmtpssl','')));
         setGlobalSetting('emailsmtpdebug', sanitize_int(Yii::app()->request->getPost('emailsmtpdebug','0')));
         setGlobalSetting('emailsmtpuser', strip_tags(returnGlobal('emailsmtpuser')));
+
+        setGlobalSetting('emailgpg', strip_tags(returnGlobal('emailgpg')));
+
+
         setGlobalSetting('filterxsshtml', strip_tags($_POST['filterxsshtml']));
         $warning = '';
         // make sure emails are valid before saving them
