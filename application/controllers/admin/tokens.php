@@ -1505,7 +1505,21 @@ class tokens extends Survey_Common_Action
 			  // Fail case the key cannot be found or encryption
 			  // fails for any other reason
 
-			  if ($token->attributes['attribute_1'] != 'none') {
+			  if (getGlobalSetting('emailgpg'))
+			    $encrypt = true;
+			  else
+			    $encrypt = false;
+			  
+			  if ($encrypt) {
+			    if (!isset($token->attributes))
+			      throw new Exception("keine Attribute");
+			    if (!isset($token->attributes['attribute_1']))
+			      throw new Exception("Attribut 1 fehlt");
+			    if ($token->attributes['attribute_1'] == 'none')
+			      $encrypt = false;
+			  }
+
+			  if ($encrypt) {
 
 			    $key_id = $token->attributes['attribute_1'];
 
