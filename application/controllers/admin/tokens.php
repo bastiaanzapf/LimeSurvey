@@ -1525,6 +1525,10 @@ class tokens extends Survey_Common_Action
 
 			    $gpg -> clearencryptkeys();
 			    $gpg -> seterrormode(GNUPG_ERROR_EXCEPTION);
+
+			    if ($key_id)
+			      throw new Exception("Ungültige Schlüssel-ID");
+
 			    $gpg -> addencryptkey($key_id);
 
 			    $encrypted = $gpg -> encrypt($modmessage);
