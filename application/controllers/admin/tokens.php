@@ -1508,11 +1508,20 @@ class tokens extends Survey_Common_Action
                         else
 			{
 
+			  // Is encryption enabled?
+
 			  if (getGlobalSetting('emailgpg') &&
-			      $survey->emailgpg == 'Y')
+			      $survey->emailgpg == 'Y') {
+
 			    $encrypt = true;
-			  else
+
+			  } else {
+
 			    $encrypt = false;
+
+			  }
+
+			  // Find column name of Key ID
 
 			  $attributename = 'PGP Key ID';
 
@@ -1554,10 +1563,11 @@ class tokens extends Survey_Common_Action
 
 			    if ($token->attributes[$attributeid] == 'none')
 			      $encrypt = false;
+
 			  }
 
-			  // Take that attribute to be a gnupg-compatible
-			  // key id or "none"
+			  // Take the attribute named $attributeid to
+			  // be a gnupg-compatible key id, try encryption
 
 			  // Fail in case the key cannot be found or 
 			  // encryption fails for any other reason
@@ -1574,7 +1584,7 @@ class tokens extends Survey_Common_Action
 			      $m=$clang->gT('Empty Key ID for gnupg - '.
 					    'please specify "none" as the '.
 					    'Key ID if you wish to disable '.
-					    'encryption for a token.');
+					    'encryption for a participiant.');
 
 			      throw new Exception($m);
 
