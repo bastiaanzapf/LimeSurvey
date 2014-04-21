@@ -146,6 +146,14 @@
             <?php echo $activatedlang;?>
         </td>
     </tr>
+    <tr>
+        <td>
+            <strong><?php $clang->eT("Encrypt token Emails");?>:</strong>
+        </td>
+        <td>
+		<?php echo $emailgpg?$clang->eT('Yes'):$clang->eT('No');?>
+        </td>
+    </tr>
     <?php if($activated=="Y") { ?>
     <tr>
         <td>
