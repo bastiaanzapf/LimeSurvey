@@ -1519,9 +1519,9 @@ class tokens extends Survey_Common_Action
 			  
 			  if ($encrypt) {
 			    if (!isset($token->attributes))
-			      throw new Exception("keine Attribute");
+			      throw new Exception($clang->gT("Token does not have attributes, but encryption needs a key ID.");
 			    if (!isset($token->attributes['attribute_1']))
-			      throw new Exception("Attribut 1 fehlt");
+			      throw new Exception($clang->gT("There is no token member Variable named 'attribute_1'");
 			    if ($token->attributes['attribute_1'] == 'none')
 			      $encrypt = false;
 			  }
@@ -1534,7 +1534,7 @@ class tokens extends Survey_Common_Action
 			    $gpg -> seterrormode(GNUPG_ERROR_EXCEPTION);
 
 			    if ($key_id == '')
-			      throw new Exception("Ungültige Schlüssel-ID: ".$key_id);
+			      throw new Exception($clang->gT("Empty Key ID for gnupg - please specify 'none' as a Key ID if you wish to disable encryption for a token."));
 
 			    $gpg -> addencryptkey($key_id);
 
