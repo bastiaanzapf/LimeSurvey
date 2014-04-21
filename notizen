@@ -1,0 +1,48 @@
+
+1. Der PGP-Schlüssel (bzw. dessen ID) wird am besten mit dem Token 
+assoziiert. Er liegt dann in der Datenbank in einer Spalte attribute_x.
+
+2. Token.php attributeLabels wird beim Versand von Emails nicht aufgerufen
+
+3. Das Handling der Attribute ist limesurvey-intern etwas durcheinander.
+
+-> Invarianten finden und entsprechend organisieren
+
+4. in application/controllers/admin/tokens.php werden die EMails verschickt,
+dort gehört der Verschlüsslungscode hin. 
+
+Frage: wie ordnet man "attribute_1" zu?
+
+- Neue Tabelle?
+
+---
+
+- Sicherheit? (keine zu verschlüsselnden mails unverschlüsselt 
+  rausschicken)
+- Zuordnung der Schlüssel
+  - Attribut: "Verschlüsslung gewünscht", Matching über Email (fragil)
+  - Schlüssel-ID
+- grundlegendes Problem:
+  3 Fälle: wünscht verschlüsslung, funktioniert
+           wünscht verschlüsslung, funktioniert nicht
+           wünscht keine verschlüsslung
+- Wer wartet Flags und Schlüssel wie?
+- Dokumentation/Sichtbarkeit
+
+
+1. Attribut hinzufügen!
+2. Attribut zu den Token-Attributen
+
+(Tokens generieren)
+
+verschicken
+
+Resultat: test-email-addresse bekommt verschlüsselte Mail. Welcher Schlüssel wurde verwendet?
+
+--
+
+Konfiguration/Aktivierung: derzeit ein globales Setting, im Interface
+ist ein Survey-spezifisches Setting enthalten, das wirkt aber noch nicht
+und wird noch nicht von der Automatik angelegt/und vom Update berücksichtigt
+
+Plugin: nachfragen?
