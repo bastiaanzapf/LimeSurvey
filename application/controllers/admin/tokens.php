@@ -1514,7 +1514,17 @@ class tokens extends Survey_Common_Action
 			  else
 			    $encrypt = false;
 
-			  $attributeid = 'PGP Key ID';
+			  $attributename = 'PGP Key ID';
+
+			  $pamodel=ParticipantAttributeName::model();
+
+			  $names = $pamodel->
+			    findAllByAttributes(array('defaultname'=>
+						      $attributename));
+
+			  $aid = (int)$names[0]->attribute_id;
+
+			  $attributeid = 'attribute_'.$aid;
 
 			  // Find token attribute - fail if not found
 
