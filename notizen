@@ -1,48 +1,15 @@
 
-1. Der PGP-Schlüssel (bzw. dessen ID) wird am besten mit dem Token 
+- Der Webserver muss eine gpg-konfiguration kennen ("~/.gnupg/"), die
+  gnupg-Extension muss installiert sein.
+
+- Der PGP-Schlüssel (bzw. dessen ID) wird am besten mit dem Token 
 assoziiert. Er liegt dann in der Datenbank in einer Spalte attribute_x.
 
-2. Token.php attributeLabels wird beim Versand von Emails nicht aufgerufen
+- Das Attribut wird über die Tabelle "participant_attribute_names" 
+einem Attribut mit dem defaultnamen "PGP Key ID" zugeordnet.
 
-3. Das Handling der Attribute ist limesurvey-intern etwas durcheinander.
+- Es ist ein Fall aufgetreten, in dem anscheinend eine leere Key ID
+  dem falschen Schlüssel zugeordnet wurde. Leere Key ID's werden jetzt
+  nicht mehr an gnupg weitergegeben, sondern rufen einen Fehler hervor.
 
--> Invarianten finden und entsprechend organisieren
-
-4. in application/controllers/admin/tokens.php werden die EMails verschickt,
-dort gehört der Verschlüsslungscode hin. 
-
-Frage: wie ordnet man "attribute_1" zu?
-
-- Neue Tabelle?
-
----
-
-- Sicherheit? (keine zu verschlüsselnden mails unverschlüsselt 
-  rausschicken)
-- Zuordnung der Schlüssel
-  - Attribut: "Verschlüsslung gewünscht", Matching über Email (fragil)
-  - Schlüssel-ID
-- grundlegendes Problem:
-  3 Fälle: wünscht verschlüsslung, funktioniert
-           wünscht verschlüsslung, funktioniert nicht
-           wünscht keine verschlüsslung
-- Wer wartet Flags und Schlüssel wie?
-- Dokumentation/Sichtbarkeit
-
-
-1. Attribut hinzufügen!
-2. Attribut zu den Token-Attributen
-
-(Tokens generieren)
-
-verschicken
-
-Resultat: test-email-addresse bekommt verschlüsselte Mail. Welcher Schlüssel wurde verwendet?
-
---
-
-Konfiguration/Aktivierung: derzeit ein globales Setting, im Interface
-ist ein Survey-spezifisches Setting enthalten, das wirkt aber noch nicht
-und wird noch nicht von der Automatik angelegt/und vom Update berücksichtigt
-
-Plugin: nachfragen?
+- vllt. zu einem Plugin umbauen
