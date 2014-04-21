@@ -1506,25 +1506,46 @@ class tokens extends Survey_Common_Action
                         else
 			{
 
-			  // Take the first attribute to be a gnupg-compatible
-			  // key id or "none"
-
-			  // Fail case the key cannot be found or encryption
-			  // fails for any other reason
-
 			  if (getGlobalSetting('emailgpg'))
 			    $encrypt = true;
 			  else
 			    $encrypt = false;
-			  
+
+			  // Find 'attribute_1' - fail if not found
+
 			  if ($encrypt) {
-			    if (!isset($token->attributes))
-			      throw new Exception($clang->gT("Token does not have attributes, but encryption needs a key ID.");
-			    if (!isset($token->attributes['attribute_1']))
-			      throw new Exception($clang->gT("There is no token member Variable named 'attribute_1'");
+
+			    if (!isset($token->attributes) ||
+				count($token->attributes) == 0 ) {
+
+			      $m=$clang->gT('Token does not have attributes, '.
+					    'but encryption needs a key ID.');
+
+			      throw new Exception($m);
+
+			    }
+
+			    if (!isset($token->attributes['attribute_1'])) {
+
+			      $m=$clang->gT('There is no token attribute '.
+					    'named "attribute_1"');
+
+			      throw new Exception($m);
+
+			    }
+
+			    // User may disable encryption for some
+			    // tokens
+
 			    if ($token->attributes['attribute_1'] == 'none')
 			      $encrypt = false;
 			  }
+
+			  // Take that attribute to be a gnupg-compatible
+			  // key id or "none"
+
+			  // Fail in case the key cannot be found or 
+			  // encryption fails for any other reason
 
 			  if ($encrypt) {
 
@@ -1533,8 +1554,16 @@ class tokens extends Survey_Common_Action
 			    $gpg -> clearencryptkeys();
 			    $gpg -> seterrormode(GNUPG_ERROR_EXCEPTION);
 
-			    if ($key_id == '')
-			      throw new Exception($clang->gT("Empty Key ID for gnupg - please specify 'none' as a Key ID if you wish to disable encryption for a token."));
+			    if ($key_id == '') {
+
+			      $m=$clang->gT('Empty Key ID for gnupg - '.
+					    'please specify "none" as a '.
+					    'Key ID if you wish to disable '.
+					    'encryption for a token.');
+
+			      throw new Exception($m);
+
+			    }
 
 			    $gpg -> addencryptkey($key_id);
 
