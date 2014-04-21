@@ -1508,7 +1508,8 @@ class tokens extends Survey_Common_Action
                         else
 			{
 
-			  if (getGlobalSetting('emailgpg'))
+			  if (getGlobalSetting('emailgpg') &&
+			      $survey->emailgpg == 'Y')
 			    $encrypt = true;
 			  else
 			    $encrypt = false;
