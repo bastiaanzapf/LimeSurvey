@@ -1270,10 +1270,12 @@ class tokens extends Survey_Common_Action
         Yii::app()->loadHelper('replacements');
 
         $token = Token::model($iSurveyId)->find();
+	$survey = Survey::model()->findByPk($iSurveyId);
 
         $aExampleRow = isset($token) ? $token->attributes : array();
-        $aSurveyLangs = Survey::model()->findByPk($iSurveyId)->additionalLanguages;
-        $sBaseLanguage = Survey::model()->findByPk($iSurveyId)->language;
+
+        $aSurveyLangs = $survey->additionalLanguages;
+        $sBaseLanguage = $survey->language;
         array_unshift($aSurveyLangs, $sBaseLanguage);
         $aTokenFields = getTokenFieldsAndNames($iSurveyId, true);
         $iAttributes = 0;
@@ -1526,23 +1528,25 @@ class tokens extends Survey_Common_Action
 			    $gpg -> clearencryptkeys();
 			    $gpg -> seterrormode(GNUPG_ERROR_EXCEPTION);
 
-			    if ($key_id)
-			      throw new Exception("Ungültige Schlüssel-ID");
+			    if ($key_id == '')
+			      throw new Exception("Ungültige Schlüssel-ID: ".$key_id);
 
 			    $gpg -> addencryptkey($key_id);
 
 			    $encrypted = $gpg -> encrypt($modmessage);
 			    
-                            $success = SendEmailMessage($encrypted, $modsubject, $to, 
-							$from, Yii::app()->getConfig("sitename"), 
-							$bHtml, getBounceEmail($iSurveyId), 
-							$aRelevantAttachments, $customheaders);
+                            $success = SendEmailMessage
+			      ($encrypted, $modsubject, $to, 
+			       $from, Yii::app()->getConfig("sitename"), 
+			       $bHtml, getBounceEmail($iSurveyId), 
+			       $aRelevantAttachments, $customheaders);
 			  } else {
 
-                            $success = SendEmailMessage($modmessage, $modsubject, $to, 
-							$from, Yii::app()->getConfig("sitename"), 
-							$bHtml, getBounceEmail($iSurveyId), 
-							$aRelevantAttachments, $customheaders);
+                            $success = SendEmailMessage
+			      ($modmessage, $modsubject, $to, 
+			       $from, Yii::app()->getConfig("sitename"), 
+			       $bHtml, getBounceEmail($iSurveyId), 
+			       $aRelevantAttachments, $customheaders);
 			  }
                         }
 
