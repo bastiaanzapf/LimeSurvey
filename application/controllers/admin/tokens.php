@@ -1514,7 +1514,9 @@ class tokens extends Survey_Common_Action
 			  else
 			    $encrypt = false;
 
-			  // Find 'attribute_1' - fail if not found
+			  $attributeid = 'PGP Key ID';
+
+			  // Find token attribute - fail if not found
 
 			  if ($encrypt) {
 
@@ -1528,10 +1530,10 @@ class tokens extends Survey_Common_Action
 
 			    }
 
-			    if (!isset($token->attributes['attribute_1'])) {
+			    if (!isset($token->attributes[$attributeid])) {
 
 			      $m=$clang->gT('There is no token attribute '.
-					    'named "attribute_1"');
+					    'named ').$attributeid;
 
 			      throw new Exception($m);
 
@@ -1540,7 +1542,7 @@ class tokens extends Survey_Common_Action
 			    // User may disable encryption for some
 			    // tokens
 
-			    if ($token->attributes['attribute_1'] == 'none')
+			    if ($token->attributes[$attributeid] == 'none')
 			      $encrypt = false;
 			  }
 
@@ -1552,7 +1554,7 @@ class tokens extends Survey_Common_Action
 
 			  if ($encrypt) {
 
-			    $key_id = $token->attributes['attribute_1'];
+			    $key_id = $token->attributes[$attributeid];
 
 			    $gpg -> clearencryptkeys();
 			    $gpg -> seterrormode(GNUPG_ERROR_EXCEPTION);
@@ -1560,7 +1562,7 @@ class tokens extends Survey_Common_Action
 			    if ($key_id == '') {
 
 			      $m=$clang->gT('Empty Key ID for gnupg - '.
-					    'please specify "none" as a '.
+					    'please specify "none" as the '.
 					    'Key ID if you wish to disable '.
 					    'encryption for a token.');
 
