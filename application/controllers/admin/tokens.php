@@ -1232,7 +1232,12 @@ class tokens extends Survey_Common_Action
     function email($iSurveyId, $tokenids = null)     
     {
 
-      $gpg = new gnupg();
+      if (getGlobalSetting('emailgpg')) {
+	if (class_exists('gnupg'))	  
+	  $gpg = new gnupg();
+	else
+	  throw new Exception($clang->gT("Class 'gnupg' is not defined, but global setting 'emailgpg' is enabled."););
+      }
       
         $clang = $this->getController()->lang;
         $iSurveyId = sanitize_int($iSurveyId);
