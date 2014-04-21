@@ -1,0 +1,15 @@
+
+- Der Webserver muss eine gpg-konfiguration kennen ("~/.gnupg/"), die
+  gnupg-Extension muss installiert sein.
+
+- Der PGP-Schlüssel (bzw. dessen ID) wird am besten mit dem Token 
+assoziiert. Er liegt dann in der Datenbank in einer Spalte attribute_x.
+
+- Das Attribut wird über die Tabelle "participant_attribute_names" 
+einem Attribut mit dem defaultnamen "PGP Key ID" zugeordnet.
+
+- Es ist ein Fall aufgetreten, in dem anscheinend eine leere Key ID
+  dem falschen Schlüssel zugeordnet wurde. Leere Key ID's werden jetzt
+  nicht mehr an gnupg weitergegeben, sondern rufen einen Fehler hervor.
+
+- vllt. zu einem Plugin umbauen

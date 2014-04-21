@@ -279,6 +279,22 @@
                             <?php if (getGlobalSetting('emailsmtpdebug')=='2' || getGlobalSetting('emailsmtpssl')==1) { echo "selected='selected'";} ?>
                             ><?php $clang->eT("Always"); ?></option>
                     </select><br />&nbsp;</li>
+		<li>
+		    <label for='emailgpg'><?php $clang->eT("Use GPG for encryption"); ?></label>
+                    <select id='emailgpg' name='emailgpg'>
+                        <option value='0'
+<?php if (getGlobalSetting('emailgpg')=='0') { echo "selected='selected'";} ?>
+                        >
+  		          <?php $clang->eT("No"); ?>
+		        </option>
+                        <option value='1'
+<?php if (getGlobalSetting('emailgpg')=='1') { echo "selected='selected'";} ?>
+                        >
+		          <?php $clang->eT("Yes"); ?>
+		        </option>
+		    </select>
+		    <br/>&nbsp;
+		</li>
                 <li><label for='maxemails'><?php $clang->eT("Email batch size:"); ?></label>
                     <input type='text' size='5' id='maxemails' name='maxemails' value="<?php echo htmlspecialchars(getGlobalSetting('maxemails')); ?>" /></li>
             </ul>

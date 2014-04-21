@@ -835,6 +835,9 @@ class Survey_Common_Action extends CAction
             $aData['activatedlang'] = $clang->gT("Yes");
         }
 
+	$aData['emailgpg'] = $aSurveyInfo['emailgpg'] &&
+	  getGlobalSetting('emailgpg');
+
         $aData['activated'] = $activated;
         if ($activated == "Y")
         {

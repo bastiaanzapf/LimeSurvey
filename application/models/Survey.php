@@ -166,6 +166,7 @@ class Survey extends LSActiveRecord
         array('publicgraphs', 'in','range'=>array('Y','N'), 'allowEmpty'=>true),
         array('listpublic', 'in','range'=>array('Y','N'), 'allowEmpty'=>true),
         array('htmlemail', 'in','range'=>array('Y','N'), 'allowEmpty'=>true),
+        array('emailgpg', 'in','range'=>array('Y','N'), 'allowEmpty'=>false),
         array('sendconfirmation', 'in','range'=>array('Y','N'), 'allowEmpty'=>true),
         array('tokenanswerspersistence', 'in','range'=>array('Y','N'), 'allowEmpty'=>true),
         array('assessments', 'in','range'=>array('Y','N'), 'allowEmpty'=>true),

@@ -1231,6 +1231,16 @@ class tokens extends Survey_Common_Action
     */
     function email($iSurveyId, $tokenids = null)     
     {
+
+      if (getGlobalSetting('emailgpg')) {
+	if (class_exists('gnupg'))	  
+	  $gpg = new gnupg();
+	else
+	  throw new Exception($clang->gT("Class 'gnupg' is not defined, ".
+					 "but global setting 'emailgpg' ".
+					 "is enabled."));
+      }
+      
         $clang = $this->getController()->lang;
         $iSurveyId = sanitize_int($iSurveyId);
 
@@ -1267,10 +1277,12 @@ class tokens extends Survey_Common_Action
         Yii::app()->loadHelper('replacements');
 
         $token = Token::model($iSurveyId)->find();
+	$survey = Survey::model()->findByPk($iSurveyId);
 
         $aExampleRow = isset($token) ? $token->attributes : array();
-        $aSurveyLangs = Survey::model()->findByPk($iSurveyId)->additionalLanguages;
-        $sBaseLanguage = Survey::model()->findByPk($iSurveyId)->language;
+
+        $aSurveyLangs = $survey->additionalLanguages;
+        $sBaseLanguage = $survey->language;
         array_unshift($aSurveyLangs, $sBaseLanguage);
         $aTokenFields = getTokenFieldsAndNames($iSurveyId, true);
         $iAttributes = 0;
@@ -1494,16 +1506,115 @@ class tokens extends Survey_Common_Action
                             $success = $event->get('error') == null;
                         }
                         else
-                        {
-                            $success = SendEmailMessage($modmessage, $modsubject, $to, $from, Yii::app()->getConfig("sitename"), $bHtml, getBounceEmail($iSurveyId), $aRelevantAttachments, $customheaders);
+			{
+
+			  // Is encryption enabled?
+
+			  if (getGlobalSetting('emailgpg') &&
+			      $survey->emailgpg == 'Y') {
+
+			    $encrypt = true;
+
+			  } else {
+
+			    $encrypt = false;
+
+			  }
+
+			  // Find column name of Key ID
+
+			  $attributename = 'PGP Key ID';
+
+			  $pamodel=ParticipantAttributeName::model();
+
+			  $names = $pamodel->
+			    findAllByAttributes(array('defaultname'=>
+						      $attributename));
+
+			  $aid = (int)$names[0]->attribute_id;
+
+			  $attributeid = 'attribute_'.$aid;
+
+			  // Find token attribute - fail if not found
+
+			  if ($encrypt) {
+
+			    if (!isset($token->attributes) ||
+				count($token->attributes) == 0 ) {
+
+			      $m=$clang->gT('Token does not have attributes, '.
+					    'but encryption needs a key ID.');
+
+			      throw new Exception($m);
+
+			    }
+
+			    if (!isset($token->attributes[$attributeid])) {
+
+			      $m=$clang->gT('There is no token attribute '.
+					    'named ').$attributeid;
+
+			      throw new Exception($m);
+
+			    }
+
+			    // User may disable encryption for some
+			    // tokens
+
+			    if ($token->attributes[$attributeid] == 'none')
+			      $encrypt = false;
+
+			  }
+
+			  // Take the attribute named $attributeid to
+			  // be a gnupg-compatible key id, try encryption
+
+			  // Fail in case the key cannot be found or 
+			  // encryption fails for any other reason
+
+			  if ($encrypt) {
+
+			    $key_id = $token->attributes[$attributeid];
+
+			    $gpg -> clearencryptkeys();
+			    $gpg -> seterrormode(GNUPG_ERROR_EXCEPTION);
+
+			    if ($key_id == '') {
+
+			      $m=$clang->gT('Empty Key ID for gnupg - '.
+					    'please specify "none" as the '.
+					    'Key ID if you wish to disable '.
+					    'encryption for a participiant.');
+
+			      throw new Exception($m);
+
+			    }
+
+			    $gpg -> addencryptkey($key_id);
+
+			    $encrypted = $gpg -> encrypt($modmessage);
+			    
+                            $success = SendEmailMessage
+			      ($encrypted, $modsubject, $to, 
+			       $from, Yii::app()->getConfig("sitename"), 
+			       $bHtml, getBounceEmail($iSurveyId), 
+			       $aRelevantAttachments, $customheaders);
+			  } else {
+
+                            $success = SendEmailMessage
+			      ($modmessage, $modsubject, $to, 
+			       $from, Yii::app()->getConfig("sitename"), 
+			       $bHtml, getBounceEmail($iSurveyId), 
+			       $aRelevantAttachments, $customheaders);
+			  }
                         }
 
-                        if ($success)
-                        {
-                            // Put date into sent
-							$token = Token::model($iSurveyId)->findByPk($emrow['tid']);
+  		        if ($success)
+			  {
+			    // Put date into sent
+			    $token = Token::model($iSurveyId)->findByPk($emrow['tid']);
                             if ($bEmail)
-                            {
+                            {			      
                                 $tokenoutput .= $clang->gT("Invitation sent to:");
                                 $token->sent = dateShift(date("Y-m-d H:i:s"), "Y-m-d H:i", Yii::app()->getConfig("timeadjust"));
                             }
@@ -1516,7 +1627,7 @@ class tokens extends Survey_Common_Action
                             $token->save();
 
                             //Update central participant survey_links
-							if(!empty($emrow['participant_id']))
+			    if(!empty($emrow['participant_id']))
                             {
                                 $slquery = SurveyLink::model()->find('participant_id = :pid AND survey_id = :sid AND token_id = :tid',array(':pid'=>$emrow['participant_id'],':sid'=>$iSurveyId,':tid'=>$emrow['tid']));
                                 if (!is_null($slquery))
@@ -1525,7 +1636,7 @@ class tokens extends Survey_Common_Action
                                     $slquery->save();
                                 }
                             }
-                            $tokenoutput .= "{$emrow['tid']}: {$emrow['firstname']} {$emrow['lastname']} ({$emrow['email']})<br />\n";
+                            $tokenoutput .= "{$emrow['tid']}: {$emrow['firstname']} {$emrow['lastname']} ({$emrow['email']}) - ".$clang->gT("Encryption: ").$clang->gT($encrypted?'Yes':'No')."<br />\n";
                             if (Yii::app()->getConfig("emailsmtpdebug") == 2)
                             {
                                 $tokenoutput .= $maildebug;

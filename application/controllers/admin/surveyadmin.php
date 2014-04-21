@@ -1085,6 +1085,7 @@ class SurveyAdmin extends Survey_Common_Action
             $esrow['usecookie'] = 'N';
             $esrow['usecaptcha'] = 'D';
             $esrow['htmlemail'] = 'Y';
+            $esrow['emailgpg'] = getGlobalSetting('emailgpg', 1)?'Y':'N';
             $esrow['sendconfirmation'] = 'Y';
             $esrow['emailnotificationto'] = '';
             $esrow['anonymized'] = 'N';
@@ -1542,6 +1543,7 @@ class SurveyAdmin extends Survey_Common_Action
             'printanswers' => $_POST['printanswers'],
             'listpublic' => $_POST['public'],
             'htmlemail' => $_POST['htmlemail'],
+            'emailgpg' => $_POST['emailgpg'],
             'sendconfirmation' => $_POST['sendconfirmation'],
             'tokenanswerspersistence' => $_POST['tokenanswerspersistence'],
             'alloweditaftercompletion' => $_POST['alloweditaftercompletion'],
