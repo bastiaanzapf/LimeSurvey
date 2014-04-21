@@ -1602,7 +1602,7 @@ class tokens extends Survey_Common_Action
                             $token->save();
 
                             //Update central participant survey_links
-							if(!empty($emrow['participant_id']))
+			    if(!empty($emrow['participant_id']))
                             {
                                 $slquery = SurveyLink::model()->find('participant_id = :pid AND survey_id = :sid AND token_id = :tid',array(':pid'=>$emrow['participant_id'],':sid'=>$iSurveyId,':tid'=>$emrow['tid']));
                                 if (!is_null($slquery))
