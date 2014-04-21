@@ -1236,7 +1236,9 @@ class tokens extends Survey_Common_Action
 	if (class_exists('gnupg'))	  
 	  $gpg = new gnupg();
 	else
-	  throw new Exception($clang->gT("Class 'gnupg' is not defined, but global setting 'emailgpg' is enabled."););
+	  throw new Exception($clang->gT("Class 'gnupg' is not defined, ".
+					 "but global setting 'emailgpg' ".
+					 "is enabled."));
       }
       
         $clang = $this->getController()->lang;
@@ -1584,12 +1586,12 @@ class tokens extends Survey_Common_Action
 			  }
                         }
 
-                        if ($success)
-                        {
-                            // Put date into sent
-							$token = Token::model($iSurveyId)->findByPk($emrow['tid']);
+  		        if ($success)
+			  {
+			    // Put date into sent
+			    $token = Token::model($iSurveyId)->findByPk($emrow['tid']);
                             if ($bEmail)
-                            {
+                            {			      
                                 $tokenoutput .= $clang->gT("Invitation sent to:");
                                 $token->sent = dateShift(date("Y-m-d H:i:s"), "Y-m-d H:i", Yii::app()->getConfig("timeadjust"));
                             }
@@ -1611,7 +1613,7 @@ class tokens extends Survey_Common_Action
                                     $slquery->save();
                                 }
                             }
-                            $tokenoutput .= "{$emrow['tid']}: {$emrow['firstname']} {$emrow['lastname']} ({$emrow['email']})<br />\n";
+                            $tokenoutput .= "{$emrow['tid']}: {$emrow['firstname']} {$emrow['lastname']} ({$emrow['email']}) - ".$clang->gT("Encryption: ").$clang->gT($encrypted?'Yes':'No')."<br />\n";
                             if (Yii::app()->getConfig("emailsmtpdebug") == 2)
                             {
                                 $tokenoutput .= $maildebug;
