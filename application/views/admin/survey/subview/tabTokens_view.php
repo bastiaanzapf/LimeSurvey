@@ -98,6 +98,23 @@
         </li>
 
         <li>
+            <label for='emailgpg'><?php $clang->eT("Use GnuPG to encrypt mails carrying the token?"); ?></label>
+            <select name='emailgpg' id='emailgpg'>
+                <option value='Y'
+                    <?php if ($esrow['emailgpg'] == "Y") { ?>
+                        selected='selected'
+                        <?php } ?>
+                    ><?php $clang->eT("Yes"); ?></option>
+                <option value='N'
+                    <?php if ($esrow['emailgpg'] == "N") { ?>
+                        selected='selected'
+                        <?php } ?>
+
+                    ><?php $clang->eT("No"); ?></option>
+            </select>
+        </li>
+
+        <li>
             <label for='sendconfirmation'><?php $clang->eT("Send confirmation emails?"); ?></label>
             <select name='sendconfirmation' id='sendconfirmation'>
                 <option value='Y'
